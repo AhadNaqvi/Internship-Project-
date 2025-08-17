@@ -1,0 +1,132 @@
+alerts:
+  enabled: true
+  notification:
+    email: false
+    slack: false
+    webhook: false
+  thresholds:
+    good: 50
+    hazardous: 500
+    moderate: 100
+    unhealthy: 200
+    unhealthy_sensitive: 150
+    very_unhealthy: 300
+apis:
+  aqicn:
+    base_url: https://api.waqi.info/feed
+    endpoints:
+      current: /@{lat};{lon}/
+      forecast: /@{lat};{lon}/
+  openweathermap:
+    base_url: https://api.openweathermap.org/data/2.5
+    endpoints:
+      air_pollution: /air_pollution
+      current: /weather
+      forecast: /forecast
+  weatherapi:
+    base_url: http://api.weatherapi.com/v1
+    endpoints:
+      current: /current.json
+      forecast: /forecast.json
+data_collection:
+  cache_duration_hours: 1
+  frequency_hours: 1
+  historical_days: 30
+  max_retries: 3
+  timeout_seconds: 30
+feature_store:
+  hopsworks:
+    feature_group_name: aqi_features
+    project_name: aqi_predictor
+  local:
+    path: data/feature_store.db
+  type: local
+features:
+  derived_features:
+  - aqi_change_rate
+  - temperature_change_rate
+  - humidity_change_rate
+  - wind_speed_change_rate
+  - rolling_mean_24h
+  - rolling_std_24h
+  - rolling_mean_7d
+  - rolling_std_7d
+  pollutant_features:
+  - pm25
+  - pm10
+  - o3
+  - no2
+  - so2
+  - co
+  time_features:
+  - hour
+  - day
+  - month
+  - day_of_week
+  - is_weekend
+  - season
+  weather_features:
+  - temperature
+  - humidity
+  - pressure
+  - wind_speed
+  - wind_direction
+  - precipitation
+  - visibility
+  - cloud_cover
+location:
+  city: Islamabad
+  country: PK
+  latitude: 33.6844
+  longitude: 73.0479
+  timezone: Asia/Karachi
+logging:
+  backup_count: 5
+  file: logs/aqi_predictor.log
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  level: INFO
+  max_size_mb: 10
+model_registry:
+  local:
+    path: models/
+  mlflow:
+    experiment_name: aqi_prediction
+    tracking_uri: sqlite:///mlflow.db
+  type: local
+models:
+  lstm:
+    batch_size: 32
+    dropout: 0.2
+    epochs: 100
+    layers: 2
+    units: 50
+    validation_split: 0.2
+  random_forest:
+    max_depth: 10
+    min_samples_leaf: 2
+    min_samples_split: 5
+    n_estimators: 100
+    random_state: 42
+  xgboost:
+    colsample_bytree: 0.8
+    learning_rate: 0.1
+    max_depth: 6
+    n_estimators: 100
+    random_state: 42
+    subsample: 0.8
+training:
+  cv_folds: 5
+  random_state: 42
+  scoring_metrics:
+  - rmse
+  - mae
+  - r2
+  - mape
+  test_size: 0.2
+  validation_size: 0.1
+webapp:
+  debug: false
+  host: 0.0.0.0
+  port: 8501
+  theme: light
+  title: AQI Predictor
