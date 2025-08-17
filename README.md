@@ -5,7 +5,6 @@
 **Project Type:** Machine Learning-based Air Quality Prediction System  
 **Technology Stack:** Python, Streamlit, Scikit-learn, TensorFlow, SQLite  
 **Architecture:** Serverless with GitHub Actions CI/CD  
-**Date:** January 2025  
 
 ---
 
